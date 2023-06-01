@@ -2,6 +2,8 @@ import time
 import json
 
 import scrapy
+from scrapy.loader import ItemLoader
+from supermercados.items import SupermercadosItem
 
 class Dia(scrapy.Spider):
     name = 'jumbo'
@@ -36,13 +38,19 @@ class Dia(scrapy.Spider):
                 if items:
                     for item in items:
 
-                        yield {
-                            "price_unit" : "",
-                            "description" : item["item"]["name"],
-                            "price" : item["item"]["offers"]["offers"][0]["price"],
-                            "sale_text" : "" ,
-                            "sale_price" : "" , 
-                        }
+                        loader = ItemLoader(item=SupermercadosItem(), selector=item)
+
+                        a = item["item"]["name"]
+                        b = str(item["item"]["offers"]["offers"][0]["price"])
+
+                        # loader.add_value("price_unit", "")
+                        loader.add_value("description", a)
+                        loader.add_value("price", b)
+                        loader.add_value("market", response.url.split(".")[1])
+                        # loader.add_value("sale_text", "")
+                        # loader.add_value("sale_price", "")
+                    
+                        yield loader.load_item()
             except Exception as e:
                 pass
             

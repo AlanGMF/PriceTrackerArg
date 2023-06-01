@@ -2,10 +2,11 @@ import time
 import json
 
 import scrapy
+from scrapy.loader import ItemLoader
+from supermercados.items import SupermercadosItem
 
 class Dia(scrapy.Spider):
     name = 'dia'
-    page_index = 1
     allowed_domains = ['diaonline.supermercadosdia.com.ar']
     start_urls = [
         'https://diaonline.supermercadosdia.com.ar/almacen?page=1',
@@ -32,19 +33,21 @@ class Dia(scrapy.Spider):
                 items = json_obj["itemListElement"]
                 
                 if items:
-                    for item in items:
+                    for itemz in items:
+                        
+                        loader = ItemLoader(item=SupermercadosItem(), selector=itemz)
 
-                        yield {
-                            "price_unit" : "",
-                            "description" : item["item"]["name"],
-                            "price" : item["item"]["offers"]["offers"][0]["price"],
-                            "sale_text" : "" ,
-                            "sale_price" : "" , 
-                        }
+                        a = itemz["item"]["name"]
+                        b = str(itemz["item"]["offers"]["offers"][0]["price"])
+
+                        loader.add_value("description", a)
+                        loader.add_value("price", b)
+                        loader.add_value("market", response.url.split(".")[1])
+                    
+                        yield loader.load_item()
+
+                    if current_page % 2 == 0:
+                        time.sleep(1)
+                    yield response.follow(next_page, callback=self.parse)
             except Exception as e:
                 pass
-            
-            if current_page % 2 == 0:
-                time.sleep(1)
-
-            yield response.follow(next_page, callback=self.parse)
