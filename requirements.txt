@@ -1,0 +1,2 @@
+scrapyd-client
+psycopg2-binary
