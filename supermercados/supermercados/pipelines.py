@@ -25,23 +25,25 @@ class SupermercadosPipeline:
         self.create_table()
 
     def create_table(self):
-        self.cur.execute("""CREATE TABLE IF NOT EXISTS tabla1 (
+        self.cur.execute("""CREATE TABLE IF NOT EXISTS Products (
         description TEXT,
         market TEXT,
         price TEXT,
-        CONSTRAINT tabla1_pk PRIMARY KEY (description, market)
+        date TEXT,
+        CONSTRAINT Products_pk PRIMARY KEY (description, market, date)
         )""")
 
     def process_item(self, item, spider):
         query = """
-        INSERT INTO tabla1 (description, market, price) 
-        VALUES (%s, %s, %s) 
-        ON CONFLICT (description, market) DO NOTHING
+        INSERT INTO Products (description, market, price, date) 
+        VALUES (%s, %s, %s, %s) 
+        ON CONFLICT (description, market, date) DO NOTHING
         """
         self.cur.execute(query, (
             item['description'],
             item['market'],
             item['price'],
+            item['date'],
         ))
 
         self.con.commit()
