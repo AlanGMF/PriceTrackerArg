@@ -47,4 +47,4 @@ curl_request_mas = BashOperator(
 
 end = DummyOperator(task_id='end', dag=dag)
 
-start >> curl_request_dia >> end#curl_request_coto >> curl_request_disco >> curl_request_jumbo >> curl_request_mas >> end
+start >> curl_request_dia >> curl_request_coto >> curl_request_disco >> curl_request_jumbo >> curl_request_mas >> end
