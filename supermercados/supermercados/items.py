@@ -20,3 +20,4 @@ class SupermercadosItem(scrapy.Item):
     sale_text = scrapy.Field(input_processor = MapCompose(remove_tags, remove_currency_n_double_space), output_processor = TakeFirst())
     sale_price = scrapy.Field(input_processor = MapCompose(remove_tags, remove_currency_n_double_space), output_processor = TakeFirst())
     market = scrapy.Field(output_processor = TakeFirst())
+    date = scrapy.Field(output_processor = TakeFirst())

@@ -1,5 +1,6 @@
 import time
 import json
+from datetime import datetime
 
 import scrapy
 from scrapy.loader import ItemLoader
@@ -18,9 +19,9 @@ class Dia(scrapy.Spider):
         "https://www.disco.com.ar/lacteos?map=category-1&page=1",
         "https://www.disco.com.ar/congelados?map=category-1&page=1",
         "https://www.disco.com.ar/panaderia-y-reposteria?map=category-1&page=1",
-        "https://www.disco.com.ar/perfumeria?map=category-1&page=1",
-        "https://www.disco.com.ar/limpieza?map=category-1&page=1",
-        "https://www.disco.com.ar/mascotas?map=category-1&page=1",
+        # "https://www.disco.com.ar/perfumeria?map=category-1&page=1",
+        # "https://www.disco.com.ar/limpieza?map=category-1&page=1",
+        # "https://www.disco.com.ar/mascotas?map=category-1&page=1",
         ]
 
     def parse(self, response):
@@ -36,19 +37,21 @@ class Dia(scrapy.Spider):
                 items = json_obj["itemListElement"]
                 
                 if items:
+
+                    current_date = datetime.now().date()
+                    date_string = current_date.strftime("%Y-%m-%d")
                     for item in items:
 
                         loader = ItemLoader(item=SupermercadosItem(), selector=item)
 
                         a = item["item"]["name"]
-                        b = str(item["item"]["offers"]["offers"][0]["price"])
+                        b = b = str(item["item"]["offers"]["highPrice"])
 
                         # loader.add_value("price_unit", "")
                         loader.add_value("description", a)
                         loader.add_value("price", b)
                         loader.add_value("market", response.url.split(".")[1])
-                        # loader.add_value("sale_text", "")
-                        # loader.add_value("sale_price", "")
+                        loader.add_value("date", date_string)
                     
                         yield loader.load_item()
             except Exception as e:

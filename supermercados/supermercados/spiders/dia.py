@@ -1,5 +1,6 @@
 import time
 import json
+from datetime import datetime
 
 import scrapy
 from scrapy.loader import ItemLoader
@@ -15,7 +16,7 @@ class Dia(scrapy.Spider):
         'https://diaonline.supermercadosdia.com.ar/perfumeria?page=1',
         'https://diaonline.supermercadosdia.com.ar/bebes-y-ninos?page=1',
         'https://diaonline.supermercadosdia.com.ar/mascotas?page=1',
-        'https://diaonline.supermercadosdia.com.ar/electro-hogar?page=1',
+        # 'https://diaonline.supermercadosdia.com.ar/electro-hogar?page=1',
         'https://diaonline.supermercadosdia.com.ar/bebidas?page=1',
         'https://diaonline.supermercadosdia.com.ar/desayuno?page=1',
         'https://diaonline.supermercadosdia.com.ar/frescos?page=1',
@@ -33,6 +34,9 @@ class Dia(scrapy.Spider):
                 items = json_obj["itemListElement"]
                 
                 if items:
+
+                    current_date = datetime.now().date()
+                    date_string = current_date.strftime("%Y-%m-%d")
                     for itemz in items:
                         
                         loader = ItemLoader(item=SupermercadosItem(), selector=itemz)
@@ -43,6 +47,7 @@ class Dia(scrapy.Spider):
                         loader.add_value("description", a)
                         loader.add_value("price", b)
                         loader.add_value("market", response.url.split(".")[1])
+                        loader.add_value("date", date_string)
                     
                         yield loader.load_item()
 

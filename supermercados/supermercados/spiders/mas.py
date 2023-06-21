@@ -1,5 +1,6 @@
 import time
 import json
+from datetime import datetime
 
 import scrapy
 from scrapy.loader import ItemLoader
@@ -26,26 +27,26 @@ class mas(scrapy.Spider):
         'https://www.masonline.com.ar/bebidas-blancas-y-licores?page=1',
         'https://www.masonline.com.ar/a-base-de-hierbas?page=1',
         'https://www.masonline.com.ar/aguas?page=1',
-        'https://www.masonline.com.ar/alimento-perro?page=1',
-        'https://www.masonline.com.ar/alimento-gato?page=1',
-        'https://www.masonline.com.ar/accesorios-y-otras-mascotas?page=1',
-        'https://www.masonline.com.ar/cuidado-corporal?page=1',
-        'https://www.masonline.com.ar/cuidado-del-adulto?page=1',
-        'https://www.masonline.com.ar/cuidado-del-bebe?page=1', 
-        'https://www.masonline.com.ar/cuidado-del-cabello?page=1',
-        'https://www.masonline.com.ar/cuidado-facial?page=1',
-        'https://www.masonline.com.ar/cuidado-oral?page=1',
-        'https://www.masonline.com.ar/accesorios-de-limpieza?page=1',
-        'https://www.masonline.com.ar/desodorante-de-ambientes?page=1',
-        'https://www.masonline.com.ar/insecticidas?page=1',
-        'https://www.masonline.com.ar/lavandina?page=1',
-        'https://www.masonline.com.ar/limpieza-de-baño?page=1',
-        'https://www.masonline.com.ar/limpieza-de-calzado?page=1',
-        'https://www.masonline.com.ar/limpieza-de-cocina?page=1',
-        'https://www.masonline.com.ar/alimentacion-infantil?page=1',
-        'https://www.masonline.com.ar/cuidado-del-bebe?page=1',
-        'https://www.masonline.com.ar/cuidado-mama?page=1',
-        'https://www.masonline.com.ar/primera-infancia?page=1',
+        # 'https://www.masonline.com.ar/alimento-perro?page=1',
+        # 'https://www.masonline.com.ar/alimento-gato?page=1',
+        # 'https://www.masonline.com.ar/accesorios-y-otras-mascotas?page=1',
+        # 'https://www.masonline.com.ar/cuidado-corporal?page=1',
+        # 'https://www.masonline.com.ar/cuidado-del-adulto?page=1',
+        # 'https://www.masonline.com.ar/cuidado-del-bebe?page=1', 
+        # 'https://www.masonline.com.ar/cuidado-del-cabello?page=1',
+        # 'https://www.masonline.com.ar/cuidado-facial?page=1',
+        # 'https://www.masonline.com.ar/cuidado-oral?page=1',
+        # 'https://www.masonline.com.ar/accesorios-de-limpieza?page=1',
+        # 'https://www.masonline.com.ar/desodorante-de-ambientes?page=1',
+        # 'https://www.masonline.com.ar/insecticidas?page=1',
+        # 'https://www.masonline.com.ar/lavandina?page=1',
+        # 'https://www.masonline.com.ar/limpieza-de-baño?page=1',
+        # 'https://www.masonline.com.ar/limpieza-de-calzado?page=1',
+        # 'https://www.masonline.com.ar/limpieza-de-cocina?page=1',
+        # 'https://www.masonline.com.ar/alimentacion-infantil?page=1',
+        # 'https://www.masonline.com.ar/cuidado-del-bebe?page=1',
+        # 'https://www.masonline.com.ar/cuidado-mama?page=1',
+        # 'https://www.masonline.com.ar/primera-infancia?page=1',
         ]
 
     def parse(self, response):
@@ -60,17 +61,21 @@ class mas(scrapy.Spider):
                 items = json_obj["itemListElement"]
                 
                 if items:
+
+                    current_date = datetime.now().date()
+                    date_string = current_date.strftime("%Y-%m-%d")
                     for item in items:
 
                         loader = ItemLoader(item=SupermercadosItem(), selector=item)
 
                         a = item["item"]["name"]
-                        b = str(item["item"]["offers"]["offers"][0]["price"])
+                        b = b = str(item["item"]["offers"]["highPrice"])
 
                         loader.add_value("description", a)
                         loader.add_value("price", b)
                         loader.add_value("market", response.url.split(".")[1])
-                    
+                        loader.add_value("date", date_string)
+
                         yield loader.load_item()
             except Exception as e:
                 pass

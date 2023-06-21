@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import scrapy
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
@@ -14,6 +16,8 @@ class Coto(CrawlSpider):
     )
 
     def parse(self, response):
+        current_date = datetime.now().date()
+        date_string = current_date.strftime("%Y-%m-%d")
 
         for product in response.xpath('//li[contains(@class, "clearfix")]'):
 
@@ -25,5 +29,6 @@ class Coto(CrawlSpider):
             loader.add_xpath('sale_text', './/span[(@class="text_price_discount")]/text()')
             loader.add_xpath('sale_price', './/span[(@class="price_discount")]/text()')
             loader.add_value("market", response.url.split(".")[1])
+            loader.add_value("date", date_string)
             
             yield loader.load_item()
