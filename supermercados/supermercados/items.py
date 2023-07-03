@@ -10,15 +10,13 @@ from w3lib.html import remove_tags
 
 def remove_currency_n_double_space(value):
     return value.replace('$', '').replace('  ', '').replace('\t', '').replace('\n', '').strip()
-def remove_comma(value):
-    return value.replace('.', '').replace(',', '.')
 
 class SupermercadosItem(scrapy.Item):
     # define the fields for your item here like:
 
     price_unit = scrapy.Field(input_processor = MapCompose(remove_tags, remove_currency_n_double_space), output_processor = TakeFirst())
     description = scrapy.Field(input_processor = MapCompose(remove_tags, remove_currency_n_double_space), output_processor = TakeFirst())
-    price = scrapy.Field(input_processor = MapCompose(remove_tags, remove_currency_n_double_space, remove_comma), output_processor = TakeFirst())
+    price = scrapy.Field(input_processor = MapCompose(remove_tags, remove_currency_n_double_space), output_processor = TakeFirst())
     sale_text = scrapy.Field(input_processor = MapCompose(remove_tags, remove_currency_n_double_space), output_processor = TakeFirst())
     sale_price = scrapy.Field(input_processor = MapCompose(remove_tags, remove_currency_n_double_space), output_processor = TakeFirst())
     market = scrapy.Field(output_processor = TakeFirst())
